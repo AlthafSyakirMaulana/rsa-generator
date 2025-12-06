@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSA Generator - Matematika Diskrit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        border: "hsl(var(--border))",
+                        input: "hsl(var(--input))",
+                        ring: "hsl(var(--ring))",
+                        background: "hsl(var(--background))",
+                        foreground: "hsl(var(--foreground))",
+                        primary: {
+                            DEFAULT: "hsl(var(--primary))",
+                            foreground: "hsl(var(--primary-foreground))",
+                        },
+                        secondary: {
+                            DEFAULT: "hsl(var(--secondary))",
+                            foreground: "hsl(var(--secondary-foreground))",
+                        },
+                        destructive: {
+                            DEFAULT: "hsl(var(--destructive))",
+                            foreground: "hsl(var(--destructive-foreground))",
+                        },
+                        muted: {
+                            DEFAULT: "hsl(var(--muted))",
+                            foreground: "hsl(var(--muted-foreground))",
+                        },
+                        accent: {
+                            DEFAULT: "hsl(var(--accent))",
+                            foreground: "hsl(var(--accent-foreground))",
+                        },
+                        popover: {
+                            DEFAULT: "hsl(var(--popover))",
+                            foreground: "hsl(var(--popover-foreground))",
+                        },
+                        card: {
+                            DEFAULT: "hsl(var(--card))",
+                            foreground: "hsl(var(--card-foreground))",
+                        },
+                    },
+                    borderRadius: {
+                        lg: "var(--radius)",
+                        md: "calc(var(--radius) - 2px)",
+                        sm: "calc(var(--radius) - 4px)",
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --background: 0 0% 100%;
+            --foreground: 222.2 84% 4.9%;
+            --card: 0 0% 100%;
+            --card-foreground: 222.2 84% 4.9%;
+            --popover: 0 0% 100%;
+            --popover-foreground: 222.2 84% 4.9%;
+            --primary: 221.2 83.2% 53.3%;
+            --primary-foreground: 210 40% 98%;
+            --secondary: 210 40% 96%;
+            --secondary-foreground: 222.2 84% 4.9%;
+            --muted: 210 40% 96%;
+            --muted-foreground: 215.4 16.3% 46.9%;
+            --accent: 210 40% 96%;
+            --accent-foreground: 222.2 84% 4.9%;
+            --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 214.3 31.8% 91.4%;
+            --input: 214.3 31.8% 91.4%;
+            --ring: 221.2 83.2% 53.3%;
+            --radius: 0.5rem;
+        }
+
+        .dark {
+            --background: 222.2 84% 4.9%;
+            --foreground: 210 40% 98%;
+            --card: 222.2 84% 4.9%;
+            --card-foreground: 210 40% 98%;
+            --popover: 222.2 84% 4.9%;
+            --popover-foreground: 210 40% 98%;
+            --primary: 217.2 91.2% 59.8%;
+            --primary-foreground: 222.2 84% 4.9%;
+            --secondary: 217.2 32.6% 17.5%;
+            --secondary-foreground: 210 40% 98%;
+            --muted: 217.2 32.6% 17.5%;
+            --muted-foreground: 215 20.2% 65.1%;
+            --accent: 217.2 32.6% 17.5%;
+            --accent-foreground: 210 40% 98%;
+            --destructive: 0 62.8% 30.6%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 217.2 32.6% 17.5%;
+            --input: 217.2 32.6% 17.5%;
+            --ring: 224.3 76.3% 94.1%;
+        }
+    </style>
+</head>
+<body class="bg-background text-foreground">
+    <div class="min-h-screen bg-background">
+        <!-- Header -->
+        <header class="border-b">
+            <div class="container mx-auto px-4 py-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold">RSA Generator</h1>
+                        <p class="text-muted-foreground mt-1">Alat Bantu Pembelajaran Matematika Diskrit - Kriptografi RSA</p>
+                    </div>
+                    <!-- Dark Mode Toggle -->
+                    <button 
+                        id="theme-toggle" 
+                        class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-10"
+                        aria-label="Toggle dark mode"
+                    >
+                        <svg class="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <svg class="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="container mx-auto px-4 py-8">
+            <div class="grid gap-8">
+                <!-- Key Generation Section -->
+                <section class="rounded-lg border bg-card text-card-foreground shadow-sm">
+                    <div class="flex flex-col space-y-1.5 p-6">
+                        <h2 class="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2">
+                            🔑 Generate Key RSA
+                        </h2>
+                        <p class="text-sm text-muted-foreground">Generate pasangan kunci publik dan privat RSA</p>
+                    </div>
+                    <div class="p-6 pt-0">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label for="p" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                    Bilangan Prima p
+                                </label>
+                                <input 
+                                    type="number" 
+                                    id="p" 
+                                    placeholder="Contoh: 47" 
+                                    value="47"
+                                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                            </div>
+                            <div class="space-y-2">
+                                <label for="q" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                    Bilangan Prima q
+                                </label>
+                                <input 
+                                    type="number" 
+                                    id="q" 
+                                    placeholder="Contoh: 71" 
+                                    value="71"
+                                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                            </div>
+                        </div>
+                        <button 
+                            onclick="generateKeys()" 
+                            class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 mt-4"
+                        >
+                            Generate Keys
+                        </button>
+                        <div id="keyResult" class="mt-4 hidden">
+                            <div class="rounded-lg border bg-muted/50">
+                                <div class="p-4">
+                                    <h3 class="text-lg font-semibold mb-3">Hasil Generate Key:</h3>
+                                    <div id="keyDetails" class="space-y-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Encryption Section -->
+                <section class="rounded-lg border bg-card text-card-foreground shadow-sm">
+                    <div class="flex flex-col space-y-1.5 p-6">
+                        <h2 class="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2">
+                            🔒 Enkripsi Pesan
+                        </h2>
+                        <p class="text-sm text-muted-foreground">Enkripsi pesan menggunakan kunci publik RSA</p>
+                    </div>
+                    <div class="p-6 pt-0">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label for="encryptMessage" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                    Pesan (Plaintext)
+                                </label>
+                                <textarea 
+                                    id="encryptMessage" 
+                                    rows="3" 
+                                    placeholder="Masukkan pesan yang akan dienkripsi"
+                                    class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                >HARI INI</textarea>
+                            </div>
+                            <div class="space-y-2">
+                                <label for="blockSize" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                    Ukuran Blok (digit)
+                                </label>
+                                <input 
+                                    type="number" 
+                                    id="blockSize" 
+                                    placeholder="Contoh: 3" 
+                                    value="3"
+                                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <div class="space-y-2">
+                                <label for="encryptE" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                    Kunci Publik e
+                                </label>
+                                <input 
+                                    type="number" 
+                                    id="encryptE" 
+                                    placeholder="Contoh: 79" 
+                                    value="79"
+                                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                            </div>
+                            <div class="space-y-2">
+                                <label for="encryptN" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                    Modulus n
+                                </label>
+                                <input 
+                                    type="number" 
+                                    id="encryptN" 
+                                    placeholder="Contoh: 3337" 
+                                    value="3337"
+                                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                            </div>
+                        </div>
+                        <button 
+                            onclick="encryptMessage()" 
+                            class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 mt-4"
+                        >
+                            Enkripsi
+                        </button>
+                        <div id="encryptResult" class="mt-4 hidden">
+                            <div class="rounded-lg border bg-muted/50">
+                                <div class="p-4">
+                                    <h3 class="text-lg font-semibold mb-3">Hasil Enkripsi:</h3>
+                                    <div id="encryptDetails" class="space-y-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Decryption Section -->
+                <section class="rounded-lg border bg-card text-card-foreground shadow-sm">
+                    <div class="flex flex-col space-y-1.5 p-6">
+                        <h2 class="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2">
+                            🔓 Dekripsi Pesan
+                        </h2>
+                        <p class="text-sm text-muted-foreground">Dekripsi ciphertext menggunakan kunci privat RSA</p>
+                    </div>
+                    <div class="p-6 pt-0">
+                        <div class="space-y-2">
+                            <label for="decryptCipher" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                Ciphertext (pisahkan dengan spasi)
+                            </label>
+                            <textarea 
+                                id="decryptCipher" 
+                                rows="3" 
+                                placeholder="Contoh: 215 776 1743 933 1731 158"
+                                class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            >215 776 1743 933 1731 158</textarea>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <div class="space-y-2">
+                                <label for="decryptD" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                    Kunci Privat d
+                                </label>
+                                <input 
+                                    type="number" 
+                                    id="decryptD" 
+                                    placeholder="Contoh: 1019" 
+                                    value="1019"
+                                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                            </div>
+                            <div class="space-y-2">
+                                <label for="decryptN" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                    Modulus n
+                                </label>
+                                <input 
+                                    type="number" 
+                                    id="decryptN" 
+                                    placeholder="Contoh: 3337" 
+                                    value="3337"
+                                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                            </div>
+                        </div>
+                        <button 
+                            onclick="decryptMessage()" 
+                            class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 mt-4"
+                        >
+                            Dekripsi
+                        </button>
+                        <div id="decryptResult" class="mt-4 hidden">
+                            <div class="rounded-lg border bg-muted/50">
+                                <div class="p-4">
+                                    <h3 class="text-lg font-semibold mb-3">Hasil Dekripsi:</h3>
+                                    <div id="decryptDetails" class="space-y-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Manual Calculation Section -->
+                <section class="rounded-lg border bg-card text-card-foreground shadow-sm">
+                    <div class="flex flex-col space-y-1.5 p-6">
+                        <h2 class="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2">
+                            🧮 Kalkulator Manual RSA
+                        </h2>
+                        <p class="text-sm text-muted-foreground">Hitung operasi modular eksponensial manual</p>
+                    </div>
+                    <div class="p-6 pt-0">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label for="calcBase" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                    Basis (pesan/cipher)
+                                </label>
+                                <input 
+                                    type="number" 
+                                    id="calcBase" 
+                                    placeholder="Contoh: 726"
+                                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                            </div>
+                            <div class="space-y-2">
+                                <label for="calcExponent" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                    Eksponen (e atau d)
+                                </label>
+                                <input 
+                                    type="number" 
+                                    id="calcExponent" 
+                                    placeholder="Contoh: 79"
+                                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                            </div>
+                        </div>
+                        <div class="space-y-2 mt-4">
+                            <label for="calcMod" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                Modulus n
+                            </label>
+                            <input 
+                                type="number" 
+                                id="calcMod" 
+                                placeholder="Contoh: 3337"
+                                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                        </div>
+                        <button 
+                            onclick="calculateModular()" 
+                            class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 mt-4"
+                        >
+                            Hitung (base^exponent mod n)
+                        </button>
+                        <div id="calcResult" class="mt-4 hidden">
+                            <div class="rounded-lg border bg-muted/50">
+                                <div class="p-4">
+                                    <h3 class="text-lg font-semibold mb-3">Hasil Perhitungan:</h3>
+                                    <div id="calcDetails" class="space-y-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Dark mode functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+
+        // Check for saved theme preference or default to light mode
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        if (currentTheme === 'dark') {
+            html.classList.add('dark');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            const theme = html.classList.contains('dark') ? 'dark' : 'light';
+            localStorage.setItem('theme', theme);
+        });
+
+        // Helper functions
+        function gcd(a, b) {
+            while (b !== 0) {
+                let temp = b;
+                b = a % b;
+                a = temp;
+            }
+            return a;
+        }
+
+        function modInverse(e, phi) {
+            let m0 = phi;
+            let y = 0, x = 1;
+            
+            if (phi === 1) return 0;
+            
+            while (e > 1) {
+                let q = Math.floor(e / phi);
+                let t = phi;
+                
+                phi = e % phi;
+                e = t;
+                t = y;
+                
+                y = x - q * y;
+                x = t;
+            }
+            
+            if (x < 0) x += m0;
+            
+            return x;
+        }
+
+        function modPow(base, exponent, modulus) {
+            if (modulus === 1) return 0;
+            let result = 1;
+            base = base % modulus;
+            
+            while (exponent > 0) {
+                if (exponent % 2 === 1) {
+                    result = (result * base) % modulus;
+                }
+                exponent = Math.floor(exponent / 2);
+                base = (base * base) % modulus;
+            }
+            
+            return result;
+        }
+
+        function isPrime(num) {
+            if (num <= 1) return false;
+            if (num <= 3) return true;
+            if (num % 2 === 0 || num % 3 === 0) return false;
+            
+            for (let i = 5; i * i <= num; i += 6) {
+                if (num % i === 0 || num % (i + 2) === 0) return false;
+            }
+            
+            return true;
+        }
+
+        function textToAscii(text) {
+            let result = '';
+            for (let i = 0; i < text.length; i++) {
+                let ascii = text.charCodeAt(i);
+                result += ascii.toString().padStart(3, '0');
+            }
+            return result;
+        }
+
+        function asciiToText(asciiStr) {
+            let text = '';
+            for (let i = 0; i < asciiStr.length; i += 3) {
+                let asciiCode = parseInt(asciiStr.substr(i, 3));
+                text += String.fromCharCode(asciiCode);
+            }
+            return text;
+        }
+
+        function splitIntoBlocks(text, blockSize) {
+            let blocks = [];
+            for (let i = 0; i < text.length; i += blockSize) {
+                blocks.push(text.substr(i, blockSize));
+            }
+            return blocks;
+        }
+
+        // Main functions
+        function generateKeys() {
+            const p = parseInt(document.getElementById('p').value);
+            const q = parseInt(document.getElementById('q').value);
+            
+            if (!isPrime(p) || !isPrime(q)) {
+                showError('keyResult', 'p dan q harus bilangan prima!');
+                return;
+            }
+            
+            const n = p * q;
+            const phi = (p - 1) * (q - 1);
+            
+            // Find e (public key) - start with common values
+            let e = 3;
+            while (e < phi && gcd(e, phi) !== 1) {
+                e += 2;
+            }
+            
+            const d = modInverse(e, phi);
+            
+            const result = `
+                <div class="flex justify-between py-2 border-b"><span class="font-medium">p:</span><span>${p}</span></div>
+                <div class="flex justify-between py-2 border-b"><span class="font-medium">q:</span><span>${q}</span></div>
+                <div class="flex justify-between py-2 border-b"><span class="font-medium">n = p × q:</span><span>${n}</span></div>
+                <div class="flex justify-between py-2 border-b"><span class="font-medium">φ(n) = (p-1)(q-1):</span><span>${phi}</span></div>
+                <div class="flex justify-between py-2 border-b"><span class="font-medium">Kunci Publik e:</span><span>${e}</span></div>
+                <div class="flex justify-between py-2 border-b"><span class="font-medium">Kunci Privat d:</span><span>${d}</span></div>
+                <div class="flex justify-between py-2 border-b"><span class="font-medium">Public Key (e, n):</span><span>(${e}, ${n})</span></div>
+                <div class="flex justify-between py-2"><span class="font-medium">Private Key (d, n):</span><span>(${d}, ${n})</span></div>
+            `;
+            
+            showResult('keyResult', 'keyDetails', result);
+            
+            // Auto-fill encryption/decryption fields
+            document.getElementById('encryptE').value = e;
+            document.getElementById('encryptN').value = n;
+            document.getElementById('decryptD').value = d;
+            document.getElementById('decryptN').value = n;
+        }
+
+        function encryptMessage() {
+            const message = document.getElementById('encryptMessage').value;
+            const e = parseInt(document.getElementById('encryptE').value);
+            const n = parseInt(document.getElementById('encryptN').value);
+            const blockSize = parseInt(document.getElementById('blockSize').value);
+            
+            if (!message || !e || !n) {
+                showError('encryptResult', 'Semua field harus diisi!');
+                return;
+            }
+            
+            // Convert to ASCII
+            const asciiText = textToAscii(message);
+            
+            // Split into blocks
+            const blocks = splitIntoBlocks(asciiText, blockSize);
+            
+            // Encrypt each block
+            const encryptedBlocks = [];
+            const encryptionSteps = [];
+            
+            blocks.forEach((block, index) => {
+                const blockNum = parseInt(block);
+                const encrypted = modPow(blockNum, e, n);
+                encryptedBlocks.push(encrypted);
+                encryptionSteps.push(`Block ${index + 1}: ${block}^${e} mod ${n} = ${encrypted}`);
+            });
+            
+            const result = `
+                <div class="space-y-3">
+                    <div class="p-3 bg-background rounded border">
+                        <div class="font-medium text-sm mb-1">Pesan Asli:</div>
+                        <div class="font-mono">"${message}"</div>
+                    </div>
+                    <div class="p-3 bg-background rounded border">
+                        <div class="font-medium text-sm mb-1">ASCII:</div>
+                        <div class="font-mono text-sm">${asciiText}</div>
+                    </div>
+                    <div class="p-3 bg-background rounded border">
+                        <div class="font-medium text-sm mb-1">Blok-blok:</div>
+                        <div class="font-mono text-sm">${blocks.join(' ')}</div>
+                    </div>
+                    <div class="p-3 bg-background rounded border">
+                        <div class="font-medium text-sm mb-2">Langkah Enkripsi:</div>
+                        <div class="space-y-1">
+                            ${encryptionSteps.map(step => `<div class="font-mono text-sm pl-2">• ${step}</div>`).join('')}
+                        </div>
+                    </div>
+                    <div class="p-3 bg-primary/10 rounded border border-primary/20">
+                        <div class="font-medium text-sm mb-1">Ciphertext:</div>
+                        <div class="font-mono font-bold">${encryptedBlocks.join(' ')}</div>
+                    </div>
+                </div>
+            `;
+            
+            showResult('encryptResult', 'encryptDetails', result);
+            
+            // Auto-fill decryption field
+            document.getElementById('decryptCipher').value = encryptedBlocks.join(' ');
+        }
+
+        function decryptMessage() {
+            const cipherText = document.getElementById('decryptCipher').value;
+            const d = parseInt(document.getElementById('decryptD').value);
+            const n = parseInt(document.getElementById('decryptN').value);
+            
+            if (!cipherText || !d || !n) {
+                showError('decryptResult', 'Semua field harus diisi!');
+                return;
+            }
+            
+            const blocks = cipherText.trim().split(/\s+/).map(block => parseInt(block));
+            
+            // Decrypt each block
+            const decryptedBlocks = [];
+            const decryptionSteps = [];
+            
+            blocks.forEach((block, index) => {
+                const decrypted = modPow(block, d, n);
+                decryptedBlocks.push(decrypted.toString().padStart(3, '0'));
+                decryptionSteps.push(`Block ${index + 1}: ${block}^${d} mod ${n} = ${decrypted}`);
+            });
+            
+            const asciiText = decryptedBlocks.join('');
+            const originalText = asciiToText(asciiText);
+            
+            const result = `
+                <div class="space-y-3">
+                    <div class="p-3 bg-background rounded border">
+                        <div class="font-medium text-sm mb-1">Ciphertext:</div>
+                        <div class="font-mono">${blocks.join(' ')}</div>
+                    </div>
+                    <div class="p-3 bg-background rounded border">
+                        <div class="font-medium text-sm mb-2">Langkah Dekripsi:</div>
+                        <div class="space-y-1">
+                            ${decryptionSteps.map(step => `<div class="font-mono text-sm pl-2">• ${step}</div>`).join('')}
+                        </div>
+                    </div>
+                    <div class="p-3 bg-background rounded border">
+                        <div class="font-medium text-sm mb-1">ASCII Terdekripsi:</div>
+                        <div class="font-mono text-sm">${asciiText}</div>
+                    </div>
+                    <div class="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800">
+                        <div class="font-medium text-sm mb-1">Pesan Asli:</div>
+                        <div class="font-mono font-bold text-green-700 dark:text-green-300">"${originalText}"</div>
+                    </div>
+                </div>
+            `;
+            
+            showResult('decryptResult', 'decryptDetails', result);
+        }
+
+        function calculateModular() {
+            const base = parseInt(document.getElementById('calcBase').value);
+            const exponent = parseInt(document.getElementById('calcExponent').value);
+            const modulus = parseInt(document.getElementById('calcMod').value);
+            
+            if (isNaN(base) || isNaN(exponent) || isNaN(modulus)) {
+                showError('calcResult', 'Semua field harus diisi dengan angka!');
+                return;
+            }
+            
+            const result = modPow(base, exponent, modulus);
+            
+            const details = `
+                <div class="space-y-3">
+                    <div class="p-3 bg-background rounded border">
+                        <div class="font-medium text-sm mb-1">Perhitungan:</div>
+                        <div class="font-mono">${base}^${exponent} mod ${modulus}</div>
+                    </div>
+                    <div class="p-3 bg-primary/10 rounded border border-primary/20">
+                        <div class="font-medium text-sm mb-1">Hasil:</div>
+                        <div class="font-mono font-bold text-lg">${result}</div>
+                    </div>
+                </div>
+            `;
+            
+            showResult('calcResult', 'calcDetails', details);
+        }
+
+        function showResult(resultId, detailsId, content) {
+            const resultDiv = document.getElementById(resultId);
+            const detailsDiv = document.getElementById(detailsId);
+            
+            resultDiv.classList.remove('hidden');
+            detailsDiv.innerHTML = content;
+        }
+
+        function showError(resultId, message) {
+            const resultDiv = document.getElementById(resultId);
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerHTML = `
+                <div class="rounded-lg border bg-destructive/10">
+                    <div class="p-4">
+                        <div class="flex items-center gap-2 text-destructive">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>${message}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Initialize with example
+        window.onload = function() {
+            generateKeys();
+        };
+    </script>
+</body>
+</html>

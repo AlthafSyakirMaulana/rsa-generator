@@ -1,0 +1,13 @@
+{
+  "name": "rsa-generator",
+  "version": "1.0.0",
+  "description": "RSA Key Generator and Calculator for Matematika Diskrit",
+  "main": "api/index.js",
+  "scripts": {
+    "start": "node api/index.js",
+    "dev": "vercel dev"
+  },
+  "keywords": ["rsa", "cryptography", "matematika-diskrit"],
+  "author": "",
+  "license": "MIT"
+}
