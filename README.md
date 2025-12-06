@@ -1,7 +1,6 @@
 # RSA Generator - Matematika Diskrit
 
-Althaf Syakir Maulana
-Website algoritma RSA (Rivest-Shamir-Adleman) // Matematika Diskrit.
+Althaf Syakir Maulana (5052231020) // Website algoritma RSA (Rivest-Shamir-Adleman) // Matematika Diskrit.
 
 ## 🚀 Fitur
 
@@ -65,4 +64,4 @@ MIT License - Bebas digunakan untuk pembelajaran
 
 ## 👨‍💻 Author
 
-Dibuat untuk tugas Matematika Diskrit - Institut Teknologi Sepuluh Nopember (ITS)
+Althaf Syakir (5052231020) - Institut Teknologi Sepuluh Nopember (ITS)
