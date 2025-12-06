@@ -1,6 +1,6 @@
 # RSA Generator - Matematika Diskrit
 
-Website interaktif untuk pembelajaran algoritma RSA (Rivest-Shamir-Adleman) dalam mata kuliah Matematika Diskrit.
+Website algoritma RSA (Rivest-Shamir-Adleman) // Matematika Diskrit.
 
 ## 🚀 Fitur
 
