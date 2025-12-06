@@ -1,5 +1,6 @@
 # RSA Generator - Matematika Diskrit
 
+Althaf Syakir Maulana
 Website algoritma RSA (Rivest-Shamir-Adleman) // Matematika Diskrit.
 
 ## 🚀 Fitur
